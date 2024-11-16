@@ -55,7 +55,7 @@ class Player
   attr_reader :board
   
   def initialize
-    @players = []
+    @players = {}
     @turns_played = 0
   end
 
@@ -67,17 +67,17 @@ class Player
     if choice != "X" && choice != "O"
       puts "Unacceptable, only X's or O's please!"
     else
-      players.push(choice)
+      players["player1"] = choice
     end
 
   end
 
   def distribute_players
      
-    if players[0] == "X"
-      players.push("O")
-    else
-      players.push("X") unless players[0] == nil
+    if players["player1"] == "X"
+      players["player2"] = "O"
+    elsif players["player1"] == "O"
+      players["player2"] = "X"
     end
     
     players
