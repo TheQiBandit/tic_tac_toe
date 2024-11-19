@@ -19,11 +19,9 @@ class Board
 
   def display_board
     puts "-------------              Choose a number!"
-    puts "| #{mutable_grid[0][0]} : #{mutable_grid[0][1]} : #{mutable_grid[0][2]} |---------------| 1 | 2 | 3 |"
-    puts "............."
-    puts "| #{mutable_grid[1][0]} : #{mutable_grid[1][1]} : #{mutable_grid[1][2]} |---------------| 4 | 5 | 6 |"
-    puts "............."
-    puts "| #{mutable_grid[2][0]} : #{mutable_grid[2][1]} : #{mutable_grid[2][2]} |---------------| 7 | 8 | 9 |"
+    puts "| #{mutable_grid[0][0]}  #{mutable_grid[0][1]}  #{mutable_grid[0][2]} |---------------| 1 | 2 | 3 |"
+    puts "| #{mutable_grid[1][0]}  #{mutable_grid[1][1]}  #{mutable_grid[1][2]} |---------------| 4 | 5 | 6 |"
+    puts "| #{mutable_grid[2][0]}  #{mutable_grid[2][1]}  #{mutable_grid[2][2]} |---------------| 7 | 8 | 9 |"
     puts "-------------"
 
   end
@@ -55,11 +53,10 @@ end
 
 
 class Player
-  attr_accessor :player1, :player2
+  attr_accessor :players
   
   def initialize
-    @player1 = nil
-    @player2 = nil
+    @players = []
   end
 
   def choose_weapon
@@ -69,17 +66,13 @@ class Player
 
     if choice != "X" && choice != "O"
       puts "Unacceptable, only X's or O's please!"
+    elsif choice == "X"
+      players.push("X", "O")
     else
-      if choice == "X"
-        player1 = "X"
-        player2 = "O"
-      elsif choice == "O"
-        player1 = "O"
-        player2 = "X"
-      end
+      players.push("O", "X")
     end
 
-    puts "Player 1 is #{player1} & player 2 is #{player2}"
+    puts "Player 1 is #{players[0]} & player 2 is #{players[1]}"
 
   end
 
@@ -104,25 +97,37 @@ end
 # puts test_play.choose_position
 
 class CLInValidator
-  attr_accessor :board
+  attr_accessor :board, :gamers
   
   def initialize
     @board = Board.new
     @gamers = Player.new
   end
 
-  def start_game
-    
-    puts "A simple tic-tac-toe game, let's start!"
-    choose_weapon
-    
+  def play_game
+
+    gamers.choose_weapon
+    i = 1
+
+    while !end_game?(board.mutable_grid)
+      if i.odd?
+        i += 1
+        board.update_board(gamers.choose_position, gamers.players[0])
+        puts "Player's #{gamers.players[1]}'s turn now"
+      elsif i.even?
+        i += 1
+        board.update_board(gamers.choose_position, gamers.players[1])
+        puts "Player's #{gamers.players[0]}'s turn now"
+      end
+    end
+   puts end_game?(board.mutable_grid)
+
   end
 
-  def play_game
-    
-    board.display_board
 
-    board.update_board(gamers.choose_position, gamers.players[0])
+  def game_tie?(board)
+     
+    board.flatten.all? { |position| position == "X" || position == "O"}
 
   end
 
@@ -141,9 +146,13 @@ class CLInValidator
     row_win? ([[board[0][0], board[1][1], board[2][2]], [board[0][2], board[1][1], board[2][0]]])
   end
 
+  def end_game?(board)
+    if row_win?(board) || col_win?(board) || diagonal_win?(board) || game_tie?(board)
+    else
+      false
+    end
+  end
 end
 
 game1 = CLInValidator.new
-# game1.start_game
-# game1.play_game
-puts game1.diagonal_win?
+game1.play_game
