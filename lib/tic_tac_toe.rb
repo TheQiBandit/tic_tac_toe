@@ -2,7 +2,7 @@ require 'io/console'
 
 class Board
 
-  attr_accessor :mutable_grid, :main_array
+  attr_accessor :mutable_grid
 
   def initialize
     @main_array = [
@@ -10,7 +10,7 @@ class Board
      [4, 5, 6],
      [7, 8, 9]
    ]
-    @mutable_grid = main_array.map do |inner_array|
+    @mutable_grid = @main_array.map do |inner_array|
       inner_array.map do |position|
         position = " "
       end
@@ -18,7 +18,7 @@ class Board
   end
 
   def display_board
-    puts "-------------              Choose a number!"
+    puts "-------------            Choose a number!"
     puts "| #{mutable_grid[0][0]}  #{mutable_grid[0][1]}  #{mutable_grid[0][2]} |---------------| 1 | 2 | 3 |"
     puts "| #{mutable_grid[1][0]}  #{mutable_grid[1][1]}  #{mutable_grid[1][2]} |---------------| 4 | 5 | 6 |"
     puts "| #{mutable_grid[2][0]}  #{mutable_grid[2][1]}  #{mutable_grid[2][2]} |---------------| 7 | 8 | 9 |"
@@ -26,30 +26,7 @@ class Board
 
   end
 
-  def update_board(position, x_o)
-        
-    case position
-      when 1..3
-        mutable_grid[0][position - 1] = x_o unless mutable_grid[0][position - 1] != " "
-        display_board
-      when 4..6
-        mutable_grid[1][position - 4] = x_o unless mutable_grid[1][position - 4] != " "
-        display_board
-      when 7..9
-        mutable_grid[2][position - 7] = x_o unless mutable_grid[2][position - 7] != " "
-        display_board
-      else
-        puts "Please enter a valid choice!"
-    end
-
-  end
-
 end
-
-# first_game = Board.new
-# first_game.display_board
-# first_game.update_board(1, "X")
-
 
 
 class Player
@@ -60,12 +37,14 @@ class Player
   end
 
   def choose_weapon
+
     puts "First player, please choose X or O!!"
 
     choice = STDIN.noecho { |i| i.gets }.chomp.upcase
 
     if choice != "X" && choice != "O"
       puts "Unacceptable, only X's or O's please!"
+      choose_weapon
     elsif choice == "X"
       players.push("X", "O")
     else
@@ -91,50 +70,66 @@ class Player
 
 end
 
-# test_play = Player.new
-# test_play.choose_weapon
-# test_play.distribute_players
-# puts test_play.choose_position
 
 class CLInValidator
-  attr_accessor :board, :gamers
+  attr_accessor :board, :gamers, :turns
   
   def initialize
     @board = Board.new
     @gamers = Player.new
+    @turns = 0
+  end
+
+  def empty_position?(position, board)
+    board.flatten[position - 1] == " "
+  end
+
+  def update_board(position, x_o)
+
+    puts "Player #{x_o}'s turn"
+    if empty_position?(position, board.mutable_grid) && position.between?(1, 9)
+      @turns += 1
+      case position
+      when 1..3
+        board.mutable_grid[0][position - 1] = x_o
+        board.display_board
+      when 4..6
+        board.mutable_grid[1][position - 4] = x_o
+        board.display_board
+      when 7..9
+        board.mutable_grid[2][position - 7] = x_o 
+        board.display_board
+      end
+    elsif !empty_position?(position, board.mutable_grid) && position.between?(1, 9)
+      puts "Please choose an empty position to play!"
+    end
+
   end
 
   def play_game
 
     gamers.choose_weapon
-    i = 1
 
-    while !end_game?(board.mutable_grid)
-      if i.odd?
-        i += 1
-        board.update_board(gamers.choose_position, gamers.players[0])
-        puts "Player's #{gamers.players[1]}'s turn now"
-      elsif i.even?
-        i += 1
-        board.update_board(gamers.choose_position, gamers.players[1])
-        puts "Player's #{gamers.players[0]}'s turn now"
+    until end_game?(board.mutable_grid)
+      if turns.even?
+        update_board(gamers.choose_position, gamers.players[0])
+      elsif turns.odd?
+        update_board(gamers.choose_position, gamers.players[1])
       end
     end
-   puts end_game?(board.mutable_grid)
+   who_won?(board.mutable_grid)
 
   end
 
 
-  def game_tie?(board)
+  def tie?(board)
      
     board.flatten.all? { |position| position == "X" || position == "O"}
 
   end
 
   def row_win?(board)
-    board.each do |row|
-      return row.first if row.include?(" ") == false && row.uniq.size == 1
-    end
+    board.each { |row| return row.first if row.uniq.size == 1 && !row.first.include?(" ") }  
     false
   end
 
@@ -147,9 +142,16 @@ class CLInValidator
   end
 
   def end_game?(board)
-    if row_win?(board) || col_win?(board) || diagonal_win?(board) || game_tie?(board)
+    row_win?(board) || col_win?(board) || diagonal_win?(board) || tie?(board)
+  end
+
+  def who_won?(board)
+    if (row_win?(board) || col_win?(board) || diagonal_win?(board)) == "X"
+      puts "Player X wins!"
+    elsif (row_win?(board) || col_win?(board) || diagonal_win?(board)) == "O"
+      puts "Player O wins!"
     else
-      false
+      puts "It's a tie!"
     end
   end
 end
