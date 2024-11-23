@@ -1,4 +1,3 @@
-
 # Class for displaying a 3x3 grid of empty spaces.
 class Board
   attr_accessor :mutable_grid
@@ -23,5 +22,4 @@ class Board
     puts "| #{mutable_grid[2][0]}  #{mutable_grid[2][1]}  #{mutable_grid[2][2]} |---------------| 7 | 8 | 9 |"
     puts "-------------"
   end
-  
 end

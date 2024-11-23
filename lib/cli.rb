@@ -1,21 +1,25 @@
-require_relative 'board'
-require_relative 'players'
-require_relative 'win_tie'
-# Command line interface class for
+require_relative "board"
+require_relative "players"
+require_relative "win_tie"
+
+# Command line interface class
 class CLI
   include WinTie
   attr_accessor :board, :gamers, :turns
 
+  # Initialize new board, new players, and set turns to 0.
   def initialize
     @board = Board.new
     @gamers = Player.new
     @turns = 0
   end
 
+  # Checking if position is empty when chosen.
   def empty_position?(position, board)
     board.flatten[position - 1] == " "
   end
 
+  # Updates the board with the chosen position and respective icon.
   def update_board(position, x_o)
     puts "Player #{x_o}'s turn"
     if empty_position?(position, board.mutable_grid) && position.between?(1, 9)
@@ -36,6 +40,7 @@ class CLI
     end
   end
 
+  # Main loop to play the game and keep it going depending by incrementing the turns.
   def play_game
     gamers.choose_weapon
 
@@ -49,10 +54,12 @@ class CLI
     who_won?(board.mutable_grid)
   end
 
+  # Mainly a check to terminate the game if a result is reached.
   def end_game?(board)
     row_win?(board) || col_win?(board) || diagonal_win?(board) || tie?(board)
   end
 
+  # Declare the result of the game.
   def who_won?(board)
     if (row_win?(board) || col_win?(board) || diagonal_win?(board)) == "X"
       puts "Player X wins!"
