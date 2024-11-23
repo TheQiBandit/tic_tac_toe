@@ -1,32 +1,7 @@
-
-# Board class which houses the grid and displays it.
-
-class Board
-  attr_accessor :mutable_grid
-
-  def initialize
-    @main_array = [
-      [1, 2, 3],
-      [4, 5, 6],
-      [7, 8, 9]
-    ]
-    @mutable_grid = @main_array.map do |inner_array|
-      inner_array.map do |_position|
-        " "
-      end
-    end
-  end
-
-  def display_board
-    puts "-------------            Choose a number!"
-    puts "| #{mutable_grid[0][0]}  #{mutable_grid[0][1]}  #{mutable_grid[0][2]} |---------------| 1 | 2 | 3 |"
-    puts "| #{mutable_grid[1][0]}  #{mutable_grid[1][1]}  #{mutable_grid[1][2]} |---------------| 4 | 5 | 6 |"
-    puts "| #{mutable_grid[2][0]}  #{mutable_grid[2][1]}  #{mutable_grid[2][2]} |---------------| 7 | 8 | 9 |"
-    puts "-------------"
-  end
-end
-
-
+require_relative 'board'
+require_relative 'players'
+require_relative 'win_tie'
+# Command line interface class for
 class CLI
   include WinTie
   attr_accessor :board, :gamers, :turns
@@ -89,5 +64,5 @@ class CLI
   end
 end
 
-game1 = CLInValidator.new
+game1 = CLI.new
 game1.play_game
