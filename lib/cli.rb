@@ -1,18 +1,18 @@
-require 'io/console'
+
+# Board class which houses the grid and displays it.
 
 class Board
-
   attr_accessor :mutable_grid
 
   def initialize
     @main_array = [
-     [1, 2, 3],
-     [4, 5, 6],
-     [7, 8, 9]
-   ]
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9]
+    ]
     @mutable_grid = @main_array.map do |inner_array|
-      inner_array.map do |position|
-        position = " "
+      inner_array.map do |_position|
+        " "
       end
     end
   end
@@ -23,57 +23,14 @@ class Board
     puts "| #{mutable_grid[1][0]}  #{mutable_grid[1][1]}  #{mutable_grid[1][2]} |---------------| 4 | 5 | 6 |"
     puts "| #{mutable_grid[2][0]}  #{mutable_grid[2][1]}  #{mutable_grid[2][2]} |---------------| 7 | 8 | 9 |"
     puts "-------------"
-
   end
-
 end
 
 
-class Player
-  attr_accessor :players
-  
-  def initialize
-    @players = []
-  end
-
-  def choose_weapon
-
-    puts "First player, please choose X or O!!"
-
-    choice = STDIN.noecho { |i| i.gets }.chomp.upcase
-
-    if choice != "X" && choice != "O"
-      puts "Unacceptable, only X's or O's please!"
-      choose_weapon
-    elsif choice == "X"
-      players.push("X", "O")
-    else
-      players.push("O", "X")
-    end
-
-    puts "Player 1 is #{players[0]} & player 2 is #{players[1]}"
-
-  end
-
-  def choose_position
-
-    chosen_position = STDIN.noecho { |i| i.gets }.chomp.to_i
-
-    if chosen_position.between?(1, 9)
-      chosen_position
-    else
-      puts "Please only choose a number from 1 - 9!"
-      choose_position
-    end
-
-  end
-
-end
-
-
-class CLInValidator
+class CLI
+  include WinTie
   attr_accessor :board, :gamers, :turns
-  
+
   def initialize
     @board = Board.new
     @gamers = Player.new
@@ -85,7 +42,6 @@ class CLInValidator
   end
 
   def update_board(position, x_o)
-
     puts "Player #{x_o}'s turn"
     if empty_position?(position, board.mutable_grid) && position.between?(1, 9)
       @turns += 1
@@ -97,17 +53,15 @@ class CLInValidator
         board.mutable_grid[1][position - 4] = x_o
         board.display_board
       when 7..9
-        board.mutable_grid[2][position - 7] = x_o 
+        board.mutable_grid[2][position - 7] = x_o
         board.display_board
       end
     elsif !empty_position?(position, board.mutable_grid) && position.between?(1, 9)
       puts "Please choose an empty position to play!"
     end
-
   end
 
   def play_game
-
     gamers.choose_weapon
 
     until end_game?(board.mutable_grid)
@@ -117,28 +71,7 @@ class CLInValidator
         update_board(gamers.choose_position, gamers.players[1])
       end
     end
-   who_won?(board.mutable_grid)
-
-  end
-
-
-  def tie?(board)
-     
-    board.flatten.all? { |position| position == "X" || position == "O"}
-
-  end
-
-  def row_win?(board)
-    board.each { |row| return row.first if row.uniq.size == 1 && !row.first.include?(" ") }  
-    false
-  end
-
-  def col_win?(board)
-    row_win?(board.transpose)
-  end
-
-  def diagonal_win?(board)
-    row_win? ([[board[0][0], board[1][1], board[2][2]], [board[0][2], board[1][1], board[2][0]]])
+    who_won?(board.mutable_grid)
   end
 
   def end_game?(board)
