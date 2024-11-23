@@ -2,7 +2,6 @@ require "io/console"
 
 # Player class which allows you to choose which player is first and,
 # allows to choose your icon, and to choose a position to play.
-
 class Player
   attr_accessor :players
 

@@ -1,1 +1,1 @@
-#tic_tac_toe
+A simple tic-tac-toe game that runs on the command line.
