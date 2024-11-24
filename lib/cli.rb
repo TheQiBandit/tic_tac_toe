@@ -21,7 +21,6 @@ class CLI
 
   # Updates the board with the chosen position and respective icon.
   def update_board(position, x_o)
-    puts "Player #{x_o}'s turn"
     if empty_position?(position, board.mutable_grid) && position.between?(1, 9)
       @turns += 1
       case position
@@ -43,11 +42,14 @@ class CLI
   # Main loop to play the game and keep it going depending by incrementing the turns.
   def play_game
     gamers.choose_weapon
+    board.help_display
 
     until end_game?(board.mutable_grid)
       if turns.even?
+        puts "Player #{gamers.players[0]}'s turn now"
         update_board(gamers.choose_position, gamers.players[0])
       elsif turns.odd?
+        puts "Player #{gamers.players[1]}'s turn now"
         update_board(gamers.choose_position, gamers.players[1])
       end
     end
@@ -70,6 +72,3 @@ class CLI
     end
   end
 end
-
-game1 = CLI.new
-game1.play_game

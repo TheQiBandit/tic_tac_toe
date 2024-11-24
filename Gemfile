@@ -4,4 +4,4 @@ source "https://rubygems.org"
 
 # gem "rails"
 
-gem "rubocop", "~> 1.68"
+gem "require_all", "~> 3.0"

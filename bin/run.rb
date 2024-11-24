@@ -1,10 +1,6 @@
-require_relative "../lib/cli"
-require_relative "../lib/players"
-require_relative "../lib/board"
-require_relative "../lib/win_tie"
+require 'require_all'
+require_all 'lib'
 
 # create CLI
 cli = CLI.new
-
-# run application
-cli.run
+cli.play_game

@@ -26,6 +26,8 @@ class Player
     end
 
     puts "Player 1 is #{players[0]} & player 2 is #{players[1]}"
+    puts "Please choose a number to play!"
+    
   end
 
   # method to choose a position between 1-9.

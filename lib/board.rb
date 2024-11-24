@@ -22,4 +22,10 @@ class Board
     puts "| #{mutable_grid[2][0]}  #{mutable_grid[2][1]}  #{mutable_grid[2][2]} |---------------| 7 | 8 | 9 |"
     puts "-------------"
   end
+
+  def help_display
+    help_arr = @main_array.map { |a| a.map { |i| i.to_s.rjust(3) }.join }
+    puts help_arr
+  end
+  
 end
